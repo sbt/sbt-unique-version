@@ -11,7 +11,7 @@ resolvers += Resolver.url("sbt-plugin-releases", url("http://scalasbt.artifactor
 
 resolvers += Resolver.url("sbt-plugin-snapshots", url("http://scalasbt.artifactoryonline.com/scalasbt/sbt-plugin-snapshots"))(Resolver.ivyStylePatterns)
 
-addSbtPlugin("com.eed3si9n" % "sbt-unique-version" % "latest.integration")
+addSbtPlugin("com.eed3si9n" % "sbt-unique-version" % "latest.integration") // or "0.1.0"
 ```
 
 Usage
@@ -41,11 +41,11 @@ ivyStatus <<= (version) { (v) =>
 
 ### How to point at it
 
-By setting `"latest.integration"` as the version, sbt selects the latest revision. Setting `"latest.milestone"` selects the latest revision with either `"milestone"` or `"release"` status. Setting `"latest.release"` selects the latest with the `"release"` status.
+By setting `"latest.integration"` as the version, sbt selects the latest revision. Setting `"latest.milestone"` selects the latest revision with either `Milestone` or `Release` status. Setting `"latest.release"` selects the latest with the `Release` status.
 
 ### Shortcomings
 
-Unlike Maven's `uniqueVersion`, or just plain "x.x.x-SNAPSHOT", this approach only takes over the revision.
+Unlike Maven's `uniqueVersion`, or just plain "x.x.x-SNAPSHOT", this approach takes over the revision.
 In addition, it allows only single track of snapshots due to the limited way Ivy allows dynamic revision.
 
 ### Then what's the point?
