@@ -35,7 +35,7 @@ publishArtifact in (Compile, packageSrc) := false
 
 lsSettings
 
-LsKeys.tags in LsKeys.lsync := Seq("sbt", "jar")
+LsKeys.tags in LsKeys.lsync := Seq("sbt", "release")
 
 (externalResolvers in LsKeys.lsync) := Seq(
   "sbt-plugin-releases" at "http://scalasbt.artifactoryonline.com/scalasbt/sbt-plugin-releases")

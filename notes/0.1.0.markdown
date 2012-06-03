@@ -1,0 +1,17 @@
+This is the initial release of sbt-unique-version.
+
+Usage
+-----
+
+Add the following in  your `build.sbt`:
+
+    import UniqueVersionKeys._ // put this at the top
+
+    uniqueVersionSettings
+
+    uniqueVersion := true
+
+Set the `version` to a snapshot one such as `"0.1.0-SNAPSHOT"`.
+This would substitute the artifact revision to something like `"0.1.0-20120602-065305"`.
+
+Your user can then point to it as `"0.1.0-+"`.
