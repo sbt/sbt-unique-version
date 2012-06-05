@@ -1,4 +1,4 @@
-import UniqueVersionKeys._
+// import UniqueVersionKeys._
 
 sbtPlugin := true
 
@@ -8,16 +8,14 @@ organization := "com.eed3si9n"
 
 version := "0.1.0"
 
-uniqueVersionSettings
+// uniqueVersionSettings
 
-uniqueVersion := true
+// uniqueVersion := true
 
-ivyStatus <<= (version) { (v) =>
-  if (v endsWith "-SNAPSHOT") IvyStatus.Milestone
-  else IvyStatus.Release
-}
-
-CrossBuilding.crossSbtVersions := Seq("0.11.3", "0.11.2" ,"0.12.0-Beta2")
+// ivyStatus <<= (version) { (v) =>
+//   if (v endsWith "-SNAPSHOT") IvyStatus.Milestone
+//   else IvyStatus.Release
+// }
 
 description := "sbt plugin to publish snapshot jars with unique version"
 
@@ -33,25 +31,27 @@ publishArtifact in (Compile, packageDoc) := false
 
 publishArtifact in (Compile, packageSrc) := false
 
-lsSettings
+publishMavenStyle := false
 
-LsKeys.tags in LsKeys.lsync := Seq("sbt", "release")
+publishTo <<= (version) { version: String =>
+   val scalasbt = "http://scalasbt.artifactoryonline.com/scalasbt/"
+   val (name, u) = if (version.contains("-SNAPSHOT")) ("scalasbt-plugin-snapshots", scalasbt+"sbt-plugin-snapshots")
+                   else ("scalasbt-plugin-releases", scalasbt+"sbt-plugin-releases")
+   Some(Resolver.url(name, url(u))(Resolver.ivyStylePatterns))
+}
 
-(externalResolvers in LsKeys.lsync) := Seq(
-  "sbt-plugin-releases" at "http://scalasbt.artifactoryonline.com/scalasbt/sbt-plugin-releases")
+credentials += Credentials(Path.userHome / ".ivy2" / ".sbtcredentials")
+
+// CrossBuilding.crossSbtVersions := Seq("0.11.3", "0.11.2" ,"0.12.0-Beta2")
 
 // CrossBuilding.scriptedSettings
 // ScriptedPlugin.scriptedSettings
 
 // scriptedBufferLog := false
 
-publishMavenStyle := false
+// lsSettings
 
-publishTo <<= (version) { version: String =>
-   val scalasbt = "http://scalasbt.artifactoryonline.com/scalasbt/"
-   val (name, u) = if (version.contains("-SNAPSHOT")) ("sbt-plugin-snapshots", scalasbt+"sbt-plugin-snapshots")
-                   else ("sbt-plugin-releases", scalasbt+"sbt-plugin-releases")
-   Some(Resolver.url(name, url(u))(Resolver.ivyStylePatterns))
-}
+// LsKeys.tags in LsKeys.lsync := Seq("sbt", "release")
 
-credentials += Credentials(Path.userHome / ".ivy2" / ".sbtcredentials")
+// (externalResolvers in LsKeys.lsync) := Seq(
+//   "sbt-plugin-releases" at "http://scalasbt.artifactoryonline.com/scalasbt/sbt-plugin-releases")

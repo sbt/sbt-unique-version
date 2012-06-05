@@ -39,7 +39,7 @@ object Plugin extends sbt.Plugin {
       if (uv && isSnapshot(v))
         old match {
           case ic: InlineConfiguration =>
-            new InlineConfiguration(replaceModule(ic.module), ic.moduleInfo, ic.dependencies, ic.ivyXML, ic.configurations,
+            new InlineConfiguration(replaceModule(ic.module), ic.moduleInfo, ic.dependencies, ic.overrides, ic.ivyXML, ic.configurations,
               ic.defaultConfiguration, ic.ivyScala, ic.validate)
           case _ => old 
         }
