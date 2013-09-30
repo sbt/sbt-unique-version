@@ -34,7 +34,7 @@ publishArtifact in (Compile, packageSrc) := false
 publishMavenStyle := false
 
 publishTo <<= (version) { version: String =>
-   val scalasbt = "http://scalasbt.artifactoryonline.com/scalasbt/"
+   val scalasbt = "http://repo.scala-sbt.org/scalasbt/sbt-plugin-releases/"
    val (name, u) = if (version.contains("-SNAPSHOT")) ("scalasbt-plugin-snapshots", scalasbt+"sbt-plugin-snapshots")
                    else ("scalasbt-plugin-releases", scalasbt+"sbt-plugin-releases")
    Some(Resolver.url(name, url(u))(Resolver.ivyStylePatterns))
