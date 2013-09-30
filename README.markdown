@@ -3,6 +3,19 @@ sbt-unique-version
 
 sbt-unique-version emulates Maven's `uniqueVersion` snapshots on Ivy repos.
 
+PSA
+---
+
+Try using git SHA. Josh Suereth in [Effective sbt](http://jsuereth.com/scala/2013/06/11/effective-sbt.html) at Scala Days 2013 came up with an alternative approach. This could be the approach after sbt 0.13 and up.
+
+```scala
+val gitHeadCommitSha = settingKey[String]("current git commit SHA")
+
+gitHeadCommitSha in ThisBuild := Process("git rev-parse HEAD").lines.head
+
+version in ThisBuild := "1.0-" + gitHeadCommitSha.value
+```
+
 Latest
 ------
 
