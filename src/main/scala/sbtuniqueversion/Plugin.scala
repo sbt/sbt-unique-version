@@ -3,10 +3,10 @@ package sbtuniqueversion
 import sbt._
 import Keys._
 
-object Plugin extends sbt.Plugin {
+object Plugin extends Plugin {
   object UniqueVersionKeys {
-    lazy val uniqueVersion = SettingKey[Boolean]("unique-version", "Enables unique version.")
-    lazy val ivyStatus = SettingKey[IvyStatus]("ivy-status", "Status of the build.")
+    lazy val uniqueVersion = settingKey[Boolean]("Enables unique version.")
+    lazy val ivyStatus = settingKey[IvyStatus]("Status of the build.")
   }
 
   import UniqueVersionKeys._
@@ -18,7 +18,6 @@ object Plugin extends sbt.Plugin {
     case object Release extends IvyStatus { override def toString: String = "release" }
   }
 
-  private def isSnapshot(v: String): Boolean = v.endsWith("-SNAPSHOT")
   private def replaceModule(m: ModuleID): ModuleID = m.copy(revision = replaceVersion(m.revision))
   private def replaceVersion(v: String): String = """SNAPSHOT$""".r.replaceFirstIn(v, uniqueString)
   private def uniqueString: String = {
@@ -28,33 +27,31 @@ object Plugin extends sbt.Plugin {
     sf.format(new ju.Date())
   }
 
-  // override val settings = uniqueVersionSettings
-  lazy val uniqueVersionSettings: Seq[sbt.Project.Setting[_]] = Seq(
+  lazy val uniqueVersionSettings: Seq[Def.Setting[_]] = Seq(
     uniqueVersion := false,
-    ivyStatus <<= (version) { (v) =>
-      if (isSnapshot(v)) IvyStatus.Integration
-      else IvyStatus.Release
-    },
-    moduleSettings <<= (moduleSettings, uniqueVersion, version) map { (old, uv, v) =>
-      if (uv && isSnapshot(v))
+    ivyStatus := { if(isSnapshot.value) IvyStatus.Integration else IvyStatus.Release },
+    moduleSettings := {
+      val old = moduleSettings.value
+      if(uniqueVersion.value && isSnapshot.value)
         old match {
           case ic: InlineConfiguration =>
             new InlineConfiguration(replaceModule(ic.module), ic.moduleInfo, ic.dependencies, ic.overrides, ic.ivyXML, ic.configurations,
               ic.defaultConfiguration, ic.ivyScala, ic.validate)
-          case _ => old 
+          case _ => old
         }
       else old
     },
-    deliverLocalConfiguration <<= (deliverLocalConfiguration, ivyStatus) map { (old, status) =>
-      new DeliverConfiguration (old.deliverIvyPattern, status.toString, old.configurations, old.logging)
+    deliverLocalConfiguration := {
+      val old = deliverLocalConfiguration.value
+      new DeliverConfiguration (old.deliverIvyPattern, ivyStatus.value.toString, old.configurations, old.logging)
     },
-    deliverConfiguration <<= (deliverConfiguration, ivyStatus) map { (old, status) =>
-      new DeliverConfiguration (old.deliverIvyPattern, status.toString, old.configurations, old.logging)
+    deliverConfiguration := {
+      val old = deliverConfiguration.value
+      new DeliverConfiguration (old.deliverIvyPattern, ivyStatus.value.toString, old.configurations, old.logging)
     }
   )
-  
-  implicit def moduleID2RichModuleID(m: ModuleID): RichModuleID = RichModuleID(m)
-  case class RichModuleID(m: ModuleID) {
+
+  implicit class RichModuleID(val m: ModuleID) extends AnyVal {
     def latestIntegration: ModuleID = m.copy(revision = "latest.integration")
     def latestMilestone: ModuleID = m.copy(revision = "latest.milestone")
     def latestRelease: ModuleID = m.copy(revision = "latest.release") 
